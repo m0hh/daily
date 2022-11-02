@@ -2,6 +2,8 @@ const express = require('express')
 const router = express.Router()
 const Task = require('../models/task')
 const auth = require('../middleware/auth')
+const schedule = require('node-schedule')
+
 
 router.post('/create', auth,async (req,res) => {
     
@@ -57,6 +59,11 @@ router.delete('/:id',auth, getOne,async (req,res) => {
         res.status(500).json({message:err.message})
     }
 })
+
+const j = schedule.scheduleJob({hour: 0},async () => {
+    console.log("working")
+    await Task.updateMany({"completed": true}, {"$set":{"completed": false}})
+  })
 
 async function getOne(req,res,next){
     let task
