@@ -31,6 +31,33 @@ router.get('/:id',auth,getOne, (req,res)=>{
     res.status(200).json(req.task)
 })
 
+router.patch('/:id',auth,getOne ,async (req,res)=>{
+    if (req.body.name != null){
+        req.task.name = req.body.name
+    }
+    if(req.body.descr != null){
+        req.task.dscr = req.body.descr
+    }
+    if(req.body.completed != null){
+        req.task.completed = req.body.completed
+    }
+    try{
+        const newTask = await req.task.save()
+        res.status(200).json(newTask)
+    }catch (err){
+        res.status(500).json({message:err.message})
+    }
+
+})
+router.delete('/:id',auth, getOne,async (req,res) => {
+    try {
+        await req.task.remove()
+        res.status(200).json({message:"Deleted"})
+    }catch (err){
+        res.status(500).json({message:err.message})
+    }
+})
+
 async function getOne(req,res,next){
     let task
     try{
